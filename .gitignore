@@ -25,4 +25,11 @@ dist-ssr
 
 #Nodemodules
 node_modules
-/OneDrive/Escritorio/*
+/OneDrive/Escritorio/
+
+/SDHCQMISC/
+/OneDrive/Escritorio/
+*.LRV
+*.dat
+/node_modules/
+/build/
