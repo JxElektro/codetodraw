@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+#Nodemodules
+node_modules
+/OneDrive/Escritorio/*
