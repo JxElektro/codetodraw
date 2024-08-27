@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { FaClipboard } from 'react-icons/fa'; // Importar ícono de copiar
+import { FaClipboard } from 'react-icons/fa';
+import mermaid from 'mermaid';
 
 const Container = styled.div`
   display: flex;
@@ -14,11 +15,11 @@ const Container = styled.div`
 `;
 
 const Grid = styled.div`
-  display: flex; /* Usar flexbox en lugar de grid */
+  display: flex;
   gap: 2rem;
   max-width: 1280px;
   margin: 0 auto;
-  width: 100%; /* Asegurar que use el ancho completo */
+  width: 100%;
 `;
 
 const Card = styled.div`
@@ -39,11 +40,11 @@ const Card = styled.div`
 `;
 
 const CodeCard = styled(Card)`
-  flex-basis: 400px; /* Ancho fijo para la tarjeta de código */
+  flex-basis: 400px;
 `;
 
 const PreviewCard = styled(Card)`
-  flex-grow: 1; /* Tarjeta de vista previa ocupa el espacio restante */
+  flex-grow: 1;
 `;
 
 const CardHeader = styled.div`
@@ -63,12 +64,12 @@ const CardTitle = styled.h2`
 
 const CardContent = styled.div`
   width: 100%;
-  position: relative; /* Para posicionar el botón de copiar */
+  position: relative;
 `;
 
 const Pre = styled.pre`
-  width: 80%; /* Ancho del snippet ajustado */
-  height: calc(100vh - 200px); /* Aprovechar el espacio vertical disponible */
+  width: 80%;
+  height: calc(100vh - 200px);
   padding: 1rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -76,16 +77,15 @@ const Pre = styled.pre`
   color: #333;
   overflow: auto;
   font-family: 'Courier New', Courier, monospace;
-  margin: 0 auto; /* Centrar el snippet */
+  margin: 0 auto;
 
-  /* Ajuste para evitar que se corte el texto */
   white-space: pre-wrap;
   word-wrap: break-word;
 `;
 
 const Textarea = styled.textarea`
-  width: 80%; /* Ancho del área de entrada ajustado */
-  height: 8rem; /* Altura del área de entrada ajustada */
+  width: 80%;
+  height: 8rem;
   padding: 1rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -94,7 +94,7 @@ const Textarea = styled.textarea`
   font-family: inherit;
   resize: none;
   outline: none;
-  margin: 1rem auto 0; /* Añadir margen hacia arriba y centrar el área de entrada */
+  margin: 1rem auto 0;
 
   &:focus {
     border-color: #007bff;
@@ -110,36 +110,37 @@ const CopyButton = styled.button`
   bottom: 1rem;
   right: 1rem;
   font-size: 1.2rem;
-  color: gray; /* Cambiar el color del ícono a gris */
+  color: gray;
   transition: color 0.2s;
-  padding: 1rem
+  padding: 1rem;
 `;
 
 const DiagramPreview = styled.div`
-  height: 30rem; /* Aumentar altura del diagrama */
-  width: 100%; /* Asegurar que cubra más a lo ancho */
+  height: 30rem;
+  width: 100%;
   background: #f0f0f0;
   border-radius: 8px;
-  position: relative; /* Para mantener el botón de copiar dentro de la tarjeta */
+  position: relative;
 `;
 
-function App() {
-  const [mermaidCode, setMermaidCode] = useState("graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;");
-  const [inputCode, setInputCode] = useState("");
+function MermaidDiagram({ definition }) {
+  const ref = useRef(null);
 
   useEffect(() => {
-    const mermaidContainer = document.getElementById("mermaid-container");
-    if (mermaid && mermaidContainer) {
-      mermaid.initialize({
-        startOnLoad: true,
-        theme: "default",
-      });
-      mermaid.contentLoaded();
-      mermaid.render("mermaid-container", mermaidCode, () => {
-        console.log("Mermaid diagram rendered");
+    mermaid.initialize({ startOnLoad: false });
+    if (ref.current) {
+      mermaid.render('mermaid-diagram', definition, (svgCode) => {
+        ref.current.innerHTML = svgCode;
       });
     }
-  }, [mermaidCode]);
+  }, [definition]);
+
+  return <div ref={ref} id="mermaid-diagram"></div>;
+}
+
+function App() {
+  const mermaidCode = "graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;";  // Código fijo, sin usar setMermaidCode
+  const [inputCode, setInputCode] = useState("");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(mermaidCode).then(() => {
@@ -150,7 +151,6 @@ function App() {
   return (
     <Container>
       <Grid>
-        {/* Mermaid Diagram Code Snippet */}
         <CodeCard>
           <CardHeader>
             <CardTitle>Mermaid Diagram Code</CardTitle>
@@ -165,23 +165,20 @@ function App() {
           </CardContent>
         </CodeCard>
 
-        {/* Mermaid Diagram Preview */}
         <PreviewCard>
           <CardHeader>
             <CardTitle>Diagram Preview</CardTitle>
           </CardHeader>
           <CardContent>
             <DiagramPreview>
-              <div id="mermaid-container" className="aspect-[4/3] w-full bg-background rounded-lg overflow-hidden"></div>
+              <MermaidDiagram definition={mermaidCode} />
             </DiagramPreview>
           </CardContent>
         </PreviewCard>
       </Grid>
 
-      {/* Espacio entre componentes */}
       <div style={{ marginTop: '2rem' }} />
 
-      {/* Input para Código de Programación */}
       <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
         <Card>
           <CardHeader>
