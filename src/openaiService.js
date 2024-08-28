@@ -22,7 +22,7 @@ export const sendCodeToOpenAI = async (inputCode) => {
         role: 'user',
         content: `Please analyze the following input like an expert programmer and provide the corresponding Mermaid code only:\n\n${inputCode}`
       }],
-      max_tokens: 300,
+      max_tokens: 1000,
       temperature: 0.5,
     });
 
