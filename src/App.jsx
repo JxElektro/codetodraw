@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaClipboard } from 'react-icons/fa';
-import Mermaid from 'react-mermaid2';
+import MermaidReact from 'mermaid-react';
 
 const Container = styled.div`
   display: flex;
@@ -78,7 +78,6 @@ const Pre = styled.pre`
   overflow: auto;
   font-family: 'Courier New', Courier, monospace;
   margin: 0 auto;
-
   white-space: pre-wrap;
   word-wrap: break-word;
 `;
@@ -124,7 +123,7 @@ const DiagramPreview = styled.div`
 `;
 
 function App() {
-  const [inputCode, setInputCode] = useState("graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;"); // Código por defecto
+  const [inputCode, setInputCode] = useState("graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;");
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inputCode).then(() => {
@@ -155,7 +154,7 @@ function App() {
           </CardHeader>
           <CardContent>
             <DiagramPreview>
-              <Mermaid chart={inputCode} />
+              <MermaidReact id="diagram" mmd={inputCode} />
             </DiagramPreview>
           </CardContent>
         </PreviewCard>
