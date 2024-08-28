@@ -112,6 +112,16 @@
   padding: 1rem;
 }
 
+.copy-button:hover {
+  color: #007bff; /* Cambio de color al pasar el mouse */
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 0.5rem;
+}
+
 .diagram-preview {
   width: 100%;
   background: #f0f0f0;

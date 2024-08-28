@@ -17,36 +17,33 @@ function App() {
   const textareaRef = useRef(null);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(inputCode).then(() => {
-      alert("Code copied to clipboard!");
-    });
+    navigator.clipboard.writeText(inputCode)
+      .then(() => alert("Code copied to clipboard!"))
+      .catch(err => console.error("Failed to copy code: ", err));
   };
 
   const handleChange = (e) => {
-    const newCode = e.target.value;
-    setInputCode(newCode);
+    setInputCode(e.target.value);
   };
 
   const validateMermaidCode = (code) => {
     try {
-      mermaid.parse(code); // Intenta analizar el código de Mermaid
-      return true; // Si se analiza correctamente, es válido
-    } catch (err) {
-      return false; // Si ocurre un error, no es válido
+      mermaid.parse(code);
+      return true;
+    } catch {
+      return false;
     }
   };
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (inputCode.trim()) {
-        if (validateMermaidCode(inputCode)) {
-          setRenderedCode(inputCode);
-          setError(null);
-        } else {
-          setError("Syntax error in Mermaid code.");
-        }
-      } else {
+      if (inputCode.trim() === "") {
         setError("Input code cannot be empty.");
+      } else if (validateMermaidCode(inputCode)) {
+        setRenderedCode(inputCode);
+        setError(null);
+      } else {
+        setError("Syntax error in Mermaid code.");
       }
     }, 500);
 
@@ -74,7 +71,7 @@ function App() {
                 <FaClipboard />
               </button>
             </pre>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {error && <p className="error-message">{error}</p>}
           </div>
         </div>
 
@@ -89,12 +86,13 @@ function App() {
               placeholder="Enter your code here..."
               value={inputCode}
               onChange={handleChange}
+              rows={4}
             />
           </div>
         </div>
       </div>
 
-      <div style={{ marginTop: '2rem', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
+      <div className="diagram-preview-container">
         <div className="card">
           <div className="card-header">
             <h2 className="card-title">Diagram Preview</h2>
