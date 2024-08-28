@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FaClipboard } from 'react-icons/fa';
 import MermaidReact from 'mermaid-react';
@@ -32,7 +32,7 @@ const Card = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background: #ffffff;
   transition: transform 0.2s, box-shadow 0.2s;
-  flex-grow: 1; /* Permite que las tarjetas crezcan según su contenido */
+  flex-grow: 1;
 
   &:hover {
     transform: translateY(-2px);
@@ -69,7 +69,7 @@ const CardContent = styled.div`
 `;
 
 const Pre = styled.pre`
-  width: 90%; /* Ajuste en el ancho */
+  width: 90%;
   padding: 0.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -83,8 +83,9 @@ const Pre = styled.pre`
 `;
 
 const Textarea = styled.textarea`
-  width: 90%; /* Ajuste en el ancho */
-  height: 6rem; /* Aumentar altura para mayor comodidad */
+  width: 90%;
+  height: auto; /* Permitir que crezca automáticamente */
+  min-height: 6rem; /* Altura mínima */
   padding: 0.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -123,12 +124,25 @@ const DiagramPreview = styled.div`
 
 function App() {
   const [inputCode, setInputCode] = useState("graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;");
+  const textareaRef = useRef(null);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inputCode).then(() => {
       alert("Code copied to clipboard!");
     });
   };
+
+  const handleChange = (e) => {
+    setInputCode(e.target.value);
+  };
+
+  // Ajustar la altura del textarea dinámicamente
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'; // Resetea la altura
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Ajusta a la altura del contenido
+    }
+  }, [inputCode]);
 
   return (
     <Container>
@@ -153,9 +167,10 @@ function App() {
           </CardHeader>
           <CardContent>
             <Textarea
+              ref={textareaRef}
               placeholder="Enter your code here..."
               value={inputCode}
-              onChange={(e) => setInputCode(e.target.value)}
+              onChange={handleChange}
             />
           </CardContent>
         </CodeInputCard>
