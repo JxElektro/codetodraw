@@ -37,10 +37,11 @@ function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (inputCode.trim() === "") {
+      const normalizedCode = inputCode.trim();
+      if (normalizedCode === "") {
         setError("Input code cannot be empty.");
-      } else if (validateMermaidCode(inputCode)) {
-        setRenderedCode(inputCode);
+      } else if (validateMermaidCode(normalizedCode)) {
+        setRenderedCode(normalizedCode);
         setError(null);
       } else {
         setError("Syntax error in Mermaid code.");
@@ -83,6 +84,8 @@ function App() {
             <textarea
               ref={textareaRef}
               className="textarea"
+              id="mermaidCodeInput" 
+              name="mermaidCode"
               placeholder="Enter your code here..."
               value={inputCode}
               onChange={handleChange}
