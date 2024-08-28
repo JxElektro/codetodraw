@@ -1,16 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaClipboard } from 'react-icons/fa';
 import MermaidReact from 'mermaid-react';
-import './App.css'; // Importa los estilos desde App.css
+import mermaid from 'mermaid';
+import './App.css';
 
 function App() {
   const [inputCode, setInputCode] = useState(`
-  flowchart TD
+    flowchart TD
       A[Start] --> B[Receive Input]
       B --> C[Process Input]
       C --> D[Show Result]
       D --> E[End]
   `);
+  const [error, setError] = useState(null);
+  const [renderedCode, setRenderedCode] = useState(inputCode);
   const textareaRef = useRef(null);
 
   const handleCopy = () => {
@@ -20,13 +23,40 @@ function App() {
   };
 
   const handleChange = (e) => {
-    setInputCode(e.target.value);
+    const newCode = e.target.value;
+    setInputCode(newCode);
+  };
+
+  const validateMermaidCode = (code) => {
+    try {
+      mermaid.parse(code); // Intenta analizar el código de Mermaid
+      return true; // Si se analiza correctamente, es válido
+    } catch (err) {
+      return false; // Si ocurre un error, no es válido
+    }
   };
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      if (inputCode.trim()) {
+        if (validateMermaidCode(inputCode)) {
+          setRenderedCode(inputCode);
+          setError(null);
+        } else {
+          setError("Syntax error in Mermaid code.");
+        }
+      } else {
+        setError("Input code cannot be empty.");
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [inputCode]);
+
+  useEffect(() => {
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'; // Resetea la altura
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Ajusta a la altura del contenido
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   }, [inputCode]);
 
@@ -44,6 +74,7 @@ function App() {
                 <FaClipboard />
               </button>
             </pre>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
           </div>
         </div>
 
@@ -70,7 +101,7 @@ function App() {
           </div>
           <div className="card-content">
             <div className="diagram-preview">
-              <MermaidReact id="diagram" mmd={inputCode} />
+              <MermaidReact id="diagram" mmd={renderedCode} />
             </div>
           </div>
         </div>
