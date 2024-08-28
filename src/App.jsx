@@ -6,13 +6,10 @@ import { sendCodeToOpenAI } from './openaiService'; // Asegúrate de que este ar
 
 function App() {
   const [inputCode, setInputCode] = useState(`
-    flowchart TD
-      A[Start] --> B[Receive Input]
-      B --> C[Process Input]
-      C --> D[Show Result]
-      D --> E[End]
+    // Insert your code here
   `);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Estado para manejar la carga
   const textareaRef = useRef(null);
   const diagramRef = useRef(null);
 
@@ -36,15 +33,23 @@ function App() {
   };
 
   const handleSendToAI = async () => {
+    setLoading(true); // Iniciar carga
+    setError(null); // Limpiar cualquier error anterior
     try {
-      const response = await sendCodeToOpenAI(inputCode);
+      // Primera llamada a OpenAI para análisis del código
+      const analysisResponse = await sendCodeToOpenAI(inputCode);
       
-      // Eliminar encabezados de markdown y espacios adicionales
-      const cleanResponse = response.replace(/```mermaid|```/g, '').trim();
-  
-      setInputCode(cleanResponse); // Actualiza el input con el código limpio
+      // Segunda llamada a OpenAI para convertir el análisis en código Mermaid
+      const mermaidResponse = await sendCodeToOpenAI(analysisResponse);
+
+      // Eliminar encabezados de markdown y espacios adicionales del código Mermaid
+      const cleanMermaidCode = mermaidResponse.replace(/```mermaid|```/g, '').trim();
+
+      setInputCode(cleanMermaidCode); // Actualiza el input con el código limpio
     } catch (error) {
       setError('Error communicating with OpenAI.');
+    } finally {
+      setLoading(false); // Finalizar carga
     }
   };
 
@@ -108,7 +113,13 @@ function App() {
               onChange={handleChange}
               rows={4}
             />
-            <button className="send-button" onClick={handleSendToAI}>Send to AI</button>
+            <button 
+              className="send-button" 
+              onClick={handleSendToAI} 
+              disabled={loading} // Deshabilitar el botón mientras carga
+            >
+              {loading ? 'Loading...' : 'Send to AI'} {/* Mostrar texto de carga */}
+            </button>
           </div>
         </div>
       </div>
