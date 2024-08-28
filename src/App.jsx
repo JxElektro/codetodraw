@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaClipboard } from 'react-icons/fa';
-import mermaid from 'mermaid';
+import Mermaid from 'react-mermaid2';
 
 const Container = styled.div`
   display: flex;
@@ -123,27 +123,11 @@ const DiagramPreview = styled.div`
   position: relative;
 `;
 
-function MermaidDiagram({ definition }) {
-  const ref = useRef(null);
-
-  useEffect(() => {
-    mermaid.initialize({ startOnLoad: false });
-    if (ref.current) {
-      mermaid.render('mermaid-diagram', definition, (svgCode) => {
-        ref.current.innerHTML = svgCode;
-      });
-    }
-  }, [definition]);
-
-  return <div ref={ref} id="mermaid-diagram"></div>;
-}
-
 function App() {
-  const mermaidCode = "graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;";  // Código fijo, sin usar setMermaidCode
-  const [inputCode, setInputCode] = useState("");
+  const [inputCode, setInputCode] = useState("graph TD;\nA-->B;\nA-->C;\nB-->D;\nC-->D;"); // Código por defecto
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(mermaidCode).then(() => {
+    navigator.clipboard.writeText(inputCode).then(() => {
       alert("Code copied to clipboard!");
     });
   };
@@ -157,7 +141,7 @@ function App() {
           </CardHeader>
           <CardContent>
             <Pre>
-              <code>{mermaidCode}</code>
+              <code>{inputCode}</code>
               <CopyButton onClick={handleCopy}>
                 <FaClipboard />
               </CopyButton>
@@ -171,7 +155,7 @@ function App() {
           </CardHeader>
           <CardContent>
             <DiagramPreview>
-              <MermaidDiagram definition={mermaidCode} />
+              <Mermaid chart={inputCode} />
             </DiagramPreview>
           </CardContent>
         </PreviewCard>
