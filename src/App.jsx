@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { FaClipboard } from 'react-icons/fa';
-import MermaidReact from 'mermaid-react';
 import mermaid from 'mermaid';
 import './App.css';
 
@@ -13,8 +12,8 @@ function App() {
       D --> E[End]
   `);
   const [error, setError] = useState(null);
-  const [renderedCode, setRenderedCode] = useState(inputCode);
   const textareaRef = useRef(null);
+  const diagramRef = useRef(null);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inputCode)
@@ -41,8 +40,12 @@ function App() {
       if (normalizedCode === "") {
         setError("Input code cannot be empty.");
       } else if (validateMermaidCode(normalizedCode)) {
-        setRenderedCode(normalizedCode);
         setError(null);
+        mermaid.render('mermaid-diagram', normalizedCode, (svgCode) => {
+          if (diagramRef.current) {
+            diagramRef.current.innerHTML = svgCode;
+          }
+        });
       } else {
         setError("Syntax error in Mermaid code.");
       }
@@ -84,7 +87,7 @@ function App() {
             <textarea
               ref={textareaRef}
               className="textarea"
-              id="mermaidCodeInput" 
+              id="mermaidCodeInput"
               name="mermaidCode"
               placeholder="Enter your code here..."
               value={inputCode}
@@ -101,9 +104,7 @@ function App() {
             <h2 className="card-title">Diagram Preview</h2>
           </div>
           <div className="card-content">
-            <div className="diagram-preview">
-              <MermaidReact id="diagram" mmd={renderedCode} />
-            </div>
+            <div className="diagram-preview" ref={diagramRef}></div>
           </div>
         </div>
       </div>
