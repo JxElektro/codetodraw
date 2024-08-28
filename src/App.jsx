@@ -26,12 +26,13 @@ const Card = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   background: #ffffff;
   transition: transform 0.2s, box-shadow 0.2s;
+  flex-grow: 1; /* Permite que las tarjetas crezcan según su contenido */
 
   &:hover {
     transform: translateY(-2px);
@@ -43,7 +44,7 @@ const CodeCard = styled(Card)`
   flex-basis: 400px;
 `;
 
-const PreviewCard = styled(Card)`
+const CodeInputCard = styled(Card)`
   flex-grow: 1;
 `;
 
@@ -52,12 +53,12 @@ const CardHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 `;
 
 const CardTitle = styled.h2`
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 600;
   color: #333;
 `;
@@ -68,9 +69,8 @@ const CardContent = styled.div`
 `;
 
 const Pre = styled.pre`
-  width: 80%;
-  height: calc(100vh - 200px);
-  padding: 1rem;
+  width: 90%; /* Ajuste en el ancho */
+  padding: 0.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   background: #f9f9f9;
@@ -83,9 +83,9 @@ const Pre = styled.pre`
 `;
 
 const Textarea = styled.textarea`
-  width: 80%;
-  height: 8rem;
-  padding: 1rem;
+  width: 90%; /* Ajuste en el ancho */
+  height: 6rem; /* Aumentar altura para mayor comodidad */
+  padding: 0.5rem;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -115,7 +115,6 @@ const CopyButton = styled.button`
 `;
 
 const DiagramPreview = styled.div`
-  height: 30rem;
   width: 100%;
   background: #f0f0f0;
   border-radius: 8px;
@@ -148,22 +147,7 @@ function App() {
           </CardContent>
         </CodeCard>
 
-        <PreviewCard>
-          <CardHeader>
-            <CardTitle>Diagram Preview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DiagramPreview>
-              <MermaidReact id="diagram" mmd={inputCode} />
-            </DiagramPreview>
-          </CardContent>
-        </PreviewCard>
-      </Grid>
-
-      <div style={{ marginTop: '2rem' }} />
-
-      <div style={{ maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
-        <Card>
+        <CodeInputCard>
           <CardHeader>
             <CardTitle>Code Input</CardTitle>
           </CardHeader>
@@ -173,6 +157,19 @@ function App() {
               value={inputCode}
               onChange={(e) => setInputCode(e.target.value)}
             />
+          </CardContent>
+        </CodeInputCard>
+      </Grid>
+
+      <div style={{ marginTop: '2rem', maxWidth: '1280px', margin: '0 auto', width: '100%' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Diagram Preview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DiagramPreview>
+              <MermaidReact id="diagram" mmd={inputCode} />
+            </DiagramPreview>
           </CardContent>
         </Card>
       </div>
