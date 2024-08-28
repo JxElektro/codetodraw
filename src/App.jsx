@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FaClipboard } from 'react-icons/fa';
 import mermaid from 'mermaid';
 import './App.css';
+import { sendCodeToOpenAI } from './openaiService'; // Asegúrate de que este archivo esté configurado correctamente
 
 function App() {
   const [inputCode, setInputCode] = useState(`
@@ -31,6 +32,19 @@ function App() {
       return true;
     } catch {
       return false;
+    }
+  };
+
+  const handleSendToAI = async () => {
+    try {
+      const response = await sendCodeToOpenAI(inputCode);
+      
+      // Eliminar encabezados de markdown y espacios adicionales
+      const cleanResponse = response.replace(/```mermaid|```/g, '').trim();
+  
+      setInputCode(cleanResponse); // Actualiza el input con el código limpio
+    } catch (error) {
+      setError('Error communicating with OpenAI.');
     }
   };
 
@@ -94,6 +108,7 @@ function App() {
               onChange={handleChange}
               rows={4}
             />
+            <button className="send-button" onClick={handleSendToAI}>Send to AI</button>
           </div>
         </div>
       </div>
