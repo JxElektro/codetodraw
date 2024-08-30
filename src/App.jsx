@@ -8,7 +8,7 @@ import './App.css';
 import { analyzeCodeWithOpenAI, generateMermaidCodeWithOpenAI } from './openaiService';
 
 function App() {
-  const [inputCode, setInputCode] = useState('//Input code here...');
+  const [inputCode, setInputCode] = useState('//Input code here...\n');
   const [analysis, setAnalysis] = useState('');
   const [mermaidCode, setMermaidCode] = useState('');
   const [error, setError] = useState(null);
