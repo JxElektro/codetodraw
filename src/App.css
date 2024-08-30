@@ -7,7 +7,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 2fr 1fr; /* La columna de input será más grande */
   gap: 20px;
 }
 
@@ -16,6 +16,15 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Añadido para la posición relativa de los botones de copiar */
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-title {
@@ -47,8 +56,8 @@
 
 .copy-button {
   position: absolute;
-  top: 5px;
-  right: 5px;
+  bottom: 5px; /* Ajustado a la parte inferior de la tarjeta */
+  right: 5px;  /* Ajustado a la parte derecha de la tarjeta */
   background-color: #6c757d;
   color: white;
   border: none;
@@ -77,4 +86,22 @@
   background-color: #f0f0f0;
   padding: 10px;
   border-radius: 4px;
+}
+
+.react-monaco-editor-container {
+  flex: 1;
+  min-height: 500px; /* Ajusta la altura según tus necesidades */
+}
+
+/* Nueva clase para hacer que la tarjeta de análisis sea más ancha */
+.analysis-card {
+  grid-column: span 2; /* Hace que la tarjeta de análisis ocupe el espacio de dos columnas */
+}
+
+/* Clase para centrar el spinner de carga */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* Altura del contenedor del spinner */
 }

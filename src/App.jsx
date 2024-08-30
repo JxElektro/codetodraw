@@ -1,45 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaClipboard } from 'react-icons/fa';
 import mermaid from 'mermaid';
+import Editor from '@monaco-editor/react';
+import ReactMarkdown from 'react-markdown'; // Importa ReactMarkdown
+import { Oval } from 'react-loader-spinner';
 import './App.css';
-import { sendCodeToOpenAI } from './openaiService';
+import { analyzeCodeWithOpenAI, generateMermaidCodeWithOpenAI } from './openaiService';
 
 function App() {
-  const [inputCode, setInputCode] = useState(`
-    // Insert your code here
-  `);
+  const [inputCode, setInputCode] = useState(''); 
+  const [analysis, setAnalysis] = useState(''); 
+  const [mermaidCode, setMermaidCode] = useState(''); 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const textareaRef = useRef(null);
   const diagramRef = useRef(null);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(inputCode)
-      .then(() => alert("Code copied to clipboard!"))
-      .catch(err => console.error("Failed to copy code: ", err));
-  };
-
-  const handleChange = (e) => {
-    setInputCode(e.target.value);
-  };
-
-  const validateMermaidCode = (code) => {
-    try {
-      mermaid.parse(code);
-      return true;
-    } catch {
-      return false;
-    }
-  };
 
   const handleSendToAI = async () => {
     setLoading(true);
     setError(null);
     try {
-      const analysisResponse = await sendCodeToOpenAI(inputCode);
-      const mermaidResponse = await sendCodeToOpenAI(analysisResponse);
-      const cleanMermaidCode = mermaidResponse.replace(/```mermaid|```/g, '').trim();
-      setInputCode(cleanMermaidCode);
+      const analysisResponse = await analyzeCodeWithOpenAI(inputCode);
+      setAnalysis(analysisResponse);
+      const mermaidResponse = await generateMermaidCodeWithOpenAI(analysisResponse);
+      setMermaidCode(mermaidResponse);
     } catch (error) {
       setError('Error communicating with OpenAI.');
     } finally {
@@ -48,64 +31,33 @@ function App() {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const normalizedCode = inputCode.trim();
-      if (normalizedCode === "") {
-        setError("Input code cannot be empty.");
-      } else if (validateMermaidCode(normalizedCode)) {
-        setError(null);
-        mermaid.render('mermaid-diagram', normalizedCode, (svgCode) => {
+    if (mermaidCode) {
+      try {
+        mermaid.render('mermaid-diagram', mermaidCode, (svgCode) => {
           if (diagramRef.current) {
             diagramRef.current.innerHTML = svgCode;
           }
         });
-      } else {
-        setError("Syntax error in Mermaid code.");
+      } catch (e) {
+        setError('Error rendering Mermaid diagram.');
       }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [inputCode]);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
-  }, [inputCode]);
+  }, [mermaidCode]);
 
   return (
     <div className="container">
       <div className="grid">
-        <div className="card code-card">
-          <div className="card-header">
-            <h2 className="card-title">Mermaid Diagram Code</h2>
-          </div>
-          <div className="card-content">
-            <pre className="pre">
-              <code>{inputCode}</code>
-              <button className="copy-button" onClick={handleCopy}>
-                <FaClipboard />
-              </button>
-            </pre>
-            {error && <p className="error-message">{error}</p>}
-          </div>
-        </div>
-
         <div className="card code-input-card">
           <div className="card-header">
             <h2 className="card-title">Code Input</h2>
           </div>
           <div className="card-content">
-            <textarea
-              ref={textareaRef}
-              className="textarea"
-              id="mermaidCodeInput"
-              name="mermaidCode"
-              placeholder="Enter your code here..."
+            <Editor
+              height="400px"
+              language="javascript"
+              theme="vs-dark"
               value={inputCode}
-              onChange={handleChange}
-              rows={4}
+              onChange={(value) => setInputCode(value)}
             />
             <button 
               className="send-button" 
@@ -114,20 +66,61 @@ function App() {
             >
               {loading ? 'Loading...' : 'Send to AI'}
             </button>
+            {error && <p className="error-message">{error}</p>}
           </div>
         </div>
-      </div>
 
-      <div className="diagram-preview-container">
-        <div className="card">
+        <div className="card mermaid-card">
           <div className="card-header">
-            <h2 className="card-title">Diagram Preview</h2>
+            <h2 className="card-title">Mermaid Diagram Code</h2>
           </div>
           <div className="card-content">
-            <div className="diagram-preview" ref={diagramRef}></div>
+            <pre className="pre">
+              <code>{mermaidCode}</code>
+            </pre>
+            <button 
+              className="copy-button" 
+              onClick={() => navigator.clipboard.writeText(mermaidCode)}
+            >
+              <FaClipboard />
+            </button>
           </div>
         </div>
+
+        {analysis && (
+          <div className="card analysis-card">
+            <div className="card-header">
+              <h2 className="card-title">Analysis</h2>
+            </div>
+            <div className="card-content">
+              <ReactMarkdown className="markdown-body">{analysis}</ReactMarkdown> {/* Usa ReactMarkdown para mostrar el análisis */}
+            </div>
+          </div>
+        )}
       </div>
+
+      {loading && (
+        <div className="loading-container">
+          <Oval
+            color="#007bff"
+            height={100}
+            width={100}
+          />
+        </div>
+      )}
+
+      {!loading && mermaidCode && (
+        <div className="diagram-preview-container">
+          <div className="card">
+            <div className="card-header">
+              <h2 className="card-title">Diagram Preview</h2>
+            </div>
+            <div className="card-content">
+              <div className="diagram-preview" ref={diagramRef}></div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
