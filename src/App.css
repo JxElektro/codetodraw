@@ -1,130 +1,80 @@
-/* App.css */
-
 .container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  min-height: 100vh;
-  background: rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  text-align: center;
-  font-family: 'Arial', sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
 .grid {
-  display: flex;
-  gap: 2rem;
-  max-width: 1280px;
-  margin: 0 auto;
-  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
 }
 
 .card {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  background: #ffffff;
-  transition: transform 0.2s, box-shadow 0.2s;
-  flex-grow: 1;
-}
-
-.card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-}
-
-.code-card {
-  flex-basis: 400px;
-}
-
-.code-input-card {
-  flex-grow: 1;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 15px;
 }
 
-.card-content {
-  width: 100%;
+.codeBox {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  padding: 10px;
   position: relative;
 }
 
 .pre {
-  width: 90%;
-  padding: 0.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: #f9f9f9;
-  color: #333;
-  overflow: auto;
-  font-family: 'Courier New', Courier, monospace;
-  margin: 0 auto;
   white-space: pre-wrap;
-  word-wrap: break-word;
+  word-break: break-word;
 }
 
-.textarea {
-  width: 90%;
-  height: auto; /* Permitir que crezca automáticamente */
-  min-height: 6rem; /* Altura mínima */
-  padding: 0.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  font-size: 1rem;
-  font-family: inherit;
-  resize: none;
-  outline: none;
-  margin: 1rem auto 0;
-}
-
-.textarea:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+.send-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
 }
 
 .copy-button {
-  background: none;
-  border: none;
-  cursor: pointer;
   position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  font-size: 1.2rem;
-  color: gray;
-  transition: color 0.2s;
-  padding: 1rem;
+  top: 5px;
+  right: 5px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 12px;
+  cursor: pointer;
 }
 
-.copy-button:hover {
-  color: #007bff; /* Cambio de color al pasar el mouse */
+.textarea {
+  width: 100%;
+  min-height: 200px;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
 }
 
 .error-message {
   color: red;
   font-weight: bold;
-  margin-top: 0.5rem;
+  margin-top: 10px;
 }
 
 .diagram-preview {
-  width: 100%;
-  background: #f0f0f0;
-  border-radius: 8px;
-  position: relative;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 4px;
 }
