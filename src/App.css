@@ -1,40 +1,64 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background-color: #d6eaf8;
+}
+
+header {
+  text-align: center;
+  padding: 10px;
+  background-color: #3949ab;
+  color: white;
+  font-size: 26px;
+}
+
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: Arial, sans-serif;
+  min-height: auto; /* Cambiado de 100vh a auto */
+  display: flex;
+  flex-direction: column;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* La columna de input será más grande */
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
+  flex: 1;
 }
 
 .card {
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  position: relative; /* Añadido para la posición relativa de los botones de copiar */
+  position: relative;
+  height: auto; /* Asegura que las tarjetas no se expandan */
+  min-height: 400px; /* Añadido para establecer un tamaño mínimo */
+  flex: none; /* Evita que las tarjetas crezcan innecesariamente */
 }
 
 .card-content {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex-grow: 1;
 }
 
 .card-title {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 15px;
+  color: #1a237e;
 }
 
 .codeBox {
-  background-color: #f0f0f0;
+  background-color: #e0e0e0;
   border-radius: 4px;
   padding: 10px;
   position: relative;
@@ -43,10 +67,11 @@
 .pre {
   white-space: pre-wrap;
   word-break: break-word;
+  color: #424242;
 }
 
 .send-button {
-  background-color: #007bff;
+  background-color: #1e88e5;
   color: white;
   border: none;
   border-radius: 4px;
@@ -56,9 +81,9 @@
 
 .copy-button {
   position: absolute;
-  bottom: 5px; /* Ajustado a la parte inferior de la tarjeta */
-  right: 5px;  /* Ajustado a la parte derecha de la tarjeta */
-  background-color: #6c757d;
+  bottom: 5px;
+  right: 5px;
+  background-color: #3949ab;
   color: white;
   border: none;
   border-radius: 4px;
@@ -74,34 +99,36 @@
   padding: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
+  background-color: #fafafa;
+  color: #1a237e;
 }
 
 .error-message {
-  color: red;
+  color: #e53935;
   font-weight: bold;
   margin-top: 10px;
 }
 
 .diagram-preview {
-  background-color: #f0f0f0;
+  background-color: #e0e0e0;
   padding: 10px;
   border-radius: 4px;
 }
 
 .react-monaco-editor-container {
   flex: 1;
-  min-height: 500px; /* Ajusta la altura según tus necesidades */
+  min-height: 400px;
+  background-color: #d6eaf8;
 }
 
-/* Nueva clase para hacer que la tarjeta de análisis sea más ancha */
 .analysis-card {
-  grid-column: span 2; /* Hace que la tarjeta de análisis ocupe el espacio de dos columnas */
+  grid-column: span 2;
 }
 
-/* Clase para centrar el spinner de carga */
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px; /* Altura del contenedor del spinner */
+  margin-top: 20px;
+  height: 100px;
 }
