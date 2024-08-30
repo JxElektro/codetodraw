@@ -67,7 +67,7 @@ function App() {
             </div>
             <div className="card-content">
               <Editor
-                height="500px"
+                height="400px"
                 language="javascript"
                 theme="vs-dark"
                 value={inputCode}

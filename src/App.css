@@ -1,6 +1,6 @@
 html, body {
-  height: 100%;
-  height: 100vh;
+  height: 90%;
+  height: 90vh;
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
@@ -12,16 +12,17 @@ body {
 
 header {
   text-align: center;
-  padding: 10px;
+  padding: 5px;
   background-color: #3949ab;
   color: white;
-  font-size: 26px;
+  font-size: 15px;
 }
 
 .container {
   width: 90%;
+  height: fit-content;
   margin: 0 auto;
-  padding: 20px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
 }
@@ -40,7 +41,7 @@ header {
   padding: 20px;
   position: relative;
   height: auto;
-  min-height: 400px;
+  min-height: 300px;
   flex: none;
 }
 
