@@ -28,7 +28,7 @@ header {
 
 .grid {
   display: grid;
-  grid-template-columns: 2fr 1fr; /* Cambiado para que la primera columna sea 2/3 y la segunda 1/3 */
+  grid-template-columns: 2fr 1fr;
   gap: 20px;
   flex: 1;
 }
