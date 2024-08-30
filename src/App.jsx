@@ -57,7 +57,7 @@ function App() {
   return (
     <>
       <header>
-        <h1>CodeDraw</h1>
+        <h1>CodeToDraw</h1>
       </header>
       <div className="container">
         <div className="grid">
@@ -71,7 +71,7 @@ function App() {
                 language="javascript"
                 theme="vs-dark"
                 value={inputCode}
-                onFocus={handleEditorFocus} // Se limpia al hacer clic en el editor
+                onFocus={handleEditorFocus}
                 onChange={(value) => setInputCode(value)}
               />
               <button 
