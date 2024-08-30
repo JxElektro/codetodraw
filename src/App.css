@@ -7,7 +7,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 2fr 1fr; /* La columna de input será más grande */
   gap: 20px;
 }
 
@@ -16,6 +16,14 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card-title {
@@ -77,4 +85,9 @@
   background-color: #f0f0f0;
   padding: 10px;
   border-radius: 4px;
+}
+
+.react-monaco-editor-container {
+  flex: 1;
+  min-height: 500px; /* Ajusta la altura según tus necesidades */
 }

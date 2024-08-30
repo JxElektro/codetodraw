@@ -1,35 +1,20 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FaClipboard } from 'react-icons/fa';
 import mermaid from 'mermaid';
+import Editor from '@monaco-editor/react';
 import './App.css';
 import { sendCodeToOpenAI } from './openaiService';
 
 function App() {
-  const [inputCode, setInputCode] = useState(`
-    // Insert your code here
-  `);
+  const [inputCode, setInputCode] = useState(''); // Estado inicial vacío
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const textareaRef = useRef(null);
   const diagramRef = useRef(null);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(inputCode)
       .then(() => alert("Code copied to clipboard!"))
       .catch(err => console.error("Failed to copy code: ", err));
-  };
-
-  const handleChange = (e) => {
-    setInputCode(e.target.value);
-  };
-
-  const validateMermaidCode = (code) => {
-    try {
-      mermaid.parse(code);
-      return true;
-    } catch {
-      return false;
-    }
   };
 
   const handleSendToAI = async () => {
@@ -67,16 +52,34 @@ function App() {
     return () => clearTimeout(timer);
   }, [inputCode]);
 
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [inputCode]);
-
   return (
     <div className="container">
       <div className="grid">
+        {/* Code Input Card */}
+        <div className="card code-input-card">
+          <div className="card-header">
+            <h2 className="card-title">Code Input</h2>
+          </div>
+          <div className="card-content">
+            <Editor
+              height="400px"
+              language="javascript"
+              theme="vs-dark"
+              value={inputCode}
+              onChange={(value) => setInputCode(value)}
+            />
+            <button 
+              className="send-button" 
+              onClick={handleSendToAI} 
+              disabled={loading}
+            >
+              {loading ? 'Loading...' : 'Send to AI'}
+            </button>
+            {error && <p className="error-message">{error}</p>}
+          </div>
+        </div>
+
+        {/* Mermaid Diagram Code Card */}
         <div className="card code-card">
           <div className="card-header">
             <h2 className="card-title">Mermaid Diagram Code</h2>
@@ -88,32 +91,6 @@ function App() {
                 <FaClipboard />
               </button>
             </pre>
-            {error && <p className="error-message">{error}</p>}
-          </div>
-        </div>
-
-        <div className="card code-input-card">
-          <div className="card-header">
-            <h2 className="card-title">Code Input</h2>
-          </div>
-          <div className="card-content">
-            <textarea
-              ref={textareaRef}
-              className="textarea"
-              id="mermaidCodeInput"
-              name="mermaidCode"
-              placeholder="Enter your code here..."
-              value={inputCode}
-              onChange={handleChange}
-              rows={4}
-            />
-            <button 
-              className="send-button" 
-              onClick={handleSendToAI} 
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : 'Send to AI'}
-            </button>
           </div>
         </div>
       </div>
