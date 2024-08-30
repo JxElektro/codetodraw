@@ -12,7 +12,6 @@ const openai = axios.create({
   },
 });
 
-// Función para reintentar solicitudes con backoff con un tiempo mayor
 const retryWithBackoff = async (fn, retries = 3, delay = 2000) => {
   try {
     return await fn();
@@ -20,14 +19,14 @@ const retryWithBackoff = async (fn, retries = 3, delay = 2000) => {
     if (retries > 0 && error.response?.status === 429) {
       console.log(`Retrying after ${delay}ms... (${retries} retries left)`);
       await new Promise(resolve => setTimeout(resolve, delay));
-      return retryWithBackoff(fn, retries - 1, delay * 2); // Incrementa el delay exponencialmente
+      return retryWithBackoff(fn, retries - 1, delay * 2);
     } else {
       throw error;
     }
   }
 };
 
-// Primera llamada: Análisis del código
+// Función para realizar el análisis del código
 export const analyzeCodeWithOpenAI = async (inputCode) => {
   console.log("Input Code for Analysis:", inputCode);
 
@@ -36,7 +35,7 @@ export const analyzeCodeWithOpenAI = async (inputCode) => {
       model: 'gpt-4o-mini',
       messages: [{
         role: 'user',
-        content: `You are an expert software engineer. Please analyze the following code and identify the key components in the logical flow (e.g., main functions, critical conditions, and loops). Provide this as a clear and structured summary without any additional explanations or conclusions. Focus only on the critical parts of the flow:\n\n${inputCode}`
+        content: `You are an expert software engineer. Please analyze the following code and identify the key components in the logical flow. Provide this as a clear and structured summary without any additional explanations or conclusions. Focus only on the critical parts of the flow:\n\n${inputCode}`
       }],
       max_tokens: 500,
       temperature: 0.3,
@@ -52,7 +51,7 @@ export const analyzeCodeWithOpenAI = async (inputCode) => {
   });
 };
 
-// Segunda llamada: Generación del código Mermaid
+// Función para generar el código Mermaid basado en el análisis
 export const generateMermaidCodeWithOpenAI = async (analysisContent) => {
   console.log("Analysis Content for Mermaid Generation:", analysisContent);
 
@@ -61,7 +60,7 @@ export const generateMermaidCodeWithOpenAI = async (analysisContent) => {
       model: 'gpt-4o-mini',
       messages: [{
         role: 'user',
-        content: `Based on the following analysis, generate a detailed Mermaid flowchart. Ensure that the flowchart only includes letters and numbers inside the elements. Avoid using any punctuation marks such as parentheses "()", angle brackets "<>", or other special characters inside the elements. The flowchart should be formatted correctly for Mermaid, focusing on accurately representing the flow without adding unnecessary details:\n\n${analysisContent}`
+        content: `Based on the following analysis, generate a detailed Mermaid flowchart. Ensure that the response includes only the Mermaid code block and nothing else. Please omit any explanations, introductions, or conclusions. Return only the Mermaid flowchart:\n\n${analysisContent}`
       }],
       max_tokens: 300,
       temperature: 0.2,
@@ -70,28 +69,15 @@ export const generateMermaidCodeWithOpenAI = async (analysisContent) => {
     if (response.data.choices.length > 0) {
       const mermaidCode = response.data.choices[0]?.message.content.trim();
       console.log("Mermaid Code:", mermaidCode);
-      return mermaidCode;
+
+      // Verificar y limpiar el código Mermaid para evitar errores de sintaxis
+      if (mermaidCode.startsWith("```mermaid")) {
+        return mermaidCode.replace(/```mermaid|```/g, '').trim();
+      } else {
+        return mermaidCode;
+      }
     } else {
       throw new Error("No Mermaid code returned from OpenAI.");
     }
   });
-};
-
-// Función que coordina ambas llamadas
-export const sendCodeToOpenAI = async (inputCode) => {
-  try {
-    // Primera llamada: análisis del código
-    const analysisContent = await analyzeCodeWithOpenAI(inputCode);
-
-    // Esperar un poco antes de la segunda llamada
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Esperar 5 segundos
-
-    // Segunda llamada: generación del código Mermaid detallado
-    const mermaidCode = await generateMermaidCodeWithOpenAI(analysisContent);
-
-    return mermaidCode;
-  } catch (error) {
-    console.error('Error in sendCodeToOpenAI:', error);
-    throw error;
-  }
 };

@@ -3,59 +3,52 @@ import { FaClipboard } from 'react-icons/fa';
 import mermaid from 'mermaid';
 import Editor from '@monaco-editor/react';
 import './App.css';
-import { sendCodeToOpenAI } from './openaiService';
+import { analyzeCodeWithOpenAI, generateMermaidCodeWithOpenAI } from './openaiService';
 
 function App() {
-  const [inputCode, setInputCode] = useState(''); // Estado inicial vacío
+  const [inputCode, setInputCode] = useState(''); // Estado para el código de entrada
+  const [analysis, setAnalysis] = useState(''); // Estado para guardar el análisis
+  const [mermaidCode, setMermaidCode] = useState(''); // Estado para guardar el código Mermaid
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const diagramRef = useRef(null);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(inputCode)
-      .then(() => alert("Code copied to clipboard!"))
-      .catch(err => console.error("Failed to copy code: ", err));
-  };
 
   const handleSendToAI = async () => {
     setLoading(true);
     setError(null);
     try {
-      const analysisResponse = await sendCodeToOpenAI(inputCode);
-      const mermaidResponse = await sendCodeToOpenAI(analysisResponse);
-      const cleanMermaidCode = mermaidResponse.replace(/```mermaid|```/g, '').trim();
-      setInputCode(cleanMermaidCode);
+      // Realizamos la primera llamada para obtener el análisis
+      const analysisResponse = await analyzeCodeWithOpenAI(inputCode);
+      setAnalysis(analysisResponse); // Guardamos el análisis recibido
+
+      // Luego generamos el código Mermaid a partir del análisis
+      const mermaidResponse = await generateMermaidCodeWithOpenAI(analysisResponse);
+      setMermaidCode(mermaidResponse); // Guardamos el código Mermaid recibido
     } catch (error) {
       setError('Error communicating with OpenAI.');
     } finally {
-      setLoading(false);
+      setLoading(false); // Terminamos la carga
     }
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const normalizedCode = inputCode.trim();
-      if (normalizedCode === "") {
-        setError("Input code cannot be empty.");
-      } else if (validateMermaidCode(normalizedCode)) {
-        setError(null);
-        mermaid.render('mermaid-diagram', normalizedCode, (svgCode) => {
+    if (mermaidCode) {
+      try {
+        mermaid.render('mermaid-diagram', mermaidCode, (svgCode) => {
           if (diagramRef.current) {
             diagramRef.current.innerHTML = svgCode;
           }
         });
-      } else {
-        setError("Syntax error in Mermaid code.");
+      } catch (e) {
+        setError('Error rendering Mermaid diagram.');
       }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [inputCode]);
+    }
+  }, [mermaidCode]);
 
   return (
     <div className="container">
       <div className="grid">
-        {/* Code Input Card */}
+        {/* Tarjeta de entrada de código */}
         <div className="card code-input-card">
           <div className="card-header">
             <h2 className="card-title">Code Input</h2>
@@ -66,45 +59,64 @@ function App() {
               language="javascript"
               theme="vs-dark"
               value={inputCode}
-              onChange={(value) => setInputCode(value)}
+              onChange={(value) => setInputCode(value)} // Actualiza el estado cuando cambia el código
             />
             <button 
               className="send-button" 
               onClick={handleSendToAI} 
-              disabled={loading}
+              disabled={loading} // Desactiva el botón si está cargando
             >
-              {loading ? 'Loading...' : 'Send to AI'}
+              {loading ? 'Loading...' : 'Send to AI'} {/* Muestra un mensaje de carga si está activo */}
             </button>
-            {error && <p className="error-message">{error}</p>}
+            {error && <p className="error-message">{error}</p>} {/* Muestra un mensaje de error si existe */}
           </div>
         </div>
 
-        {/* Mermaid Diagram Code Card */}
-        <div className="card code-card">
+        {/* Tarjeta de análisis recibido */}
+        <div className="card analysis-card">
+          <div className="card-header">
+            <h2 className="card-title">Analysis</h2>
+          </div>
+          <div className="card-content">
+            <pre className="pre">
+              <code>{analysis}</code> {/* Muestra el análisis recibido */}
+              <button className="copy-button" onClick={() => navigator.clipboard.writeText(analysis)}>
+                <FaClipboard /> {/* Botón para copiar el análisis al portapapeles */}
+              </button>
+            </pre>
+          </div>
+        </div>
+
+        {/* Tarjeta de código Mermaid */}
+        <div className="card mermaid-card">
           <div className="card-header">
             <h2 className="card-title">Mermaid Diagram Code</h2>
           </div>
           <div className="card-content">
             <pre className="pre">
-              <code>{inputCode}</code>
-              <button className="copy-button" onClick={handleCopy}>
-                <FaClipboard />
+              <code>{mermaidCode}</code> {/* Muestra el código Mermaid */}
+              <button className="copy-button" onClick={() => navigator.clipboard.writeText(mermaidCode)}>
+                <FaClipboard /> {/* Botón para copiar el código al portapapeles */}
               </button>
             </pre>
           </div>
         </div>
       </div>
 
-      <div className="diagram-preview-container">
-        <div className="card">
-          <div className="card-header">
-            <h2 className="card-title">Diagram Preview</h2>
-          </div>
-          <div className="card-content">
-            <div className="diagram-preview" ref={diagramRef}></div>
+      {/* Mostrar el preview solo si hay código Mermaid */}
+      {loading && <div className="loading">Loading diagram...</div>}
+      {!loading && mermaidCode && (
+        <div className="diagram-preview-container">
+          <div className="card">
+            <div className="card-header">
+              <h2 className="card-title">Diagram Preview</h2>
+            </div>
+            <div className="card-content">
+              <div className="diagram-preview" ref={diagramRef}></div> {/* Contenedor del diagrama renderizado */}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
