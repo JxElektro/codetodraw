@@ -8,26 +8,24 @@ import './App.css';
 import { analyzeCodeWithOpenAI, generateMermaidCodeWithOpenAI } from './openaiService';
 
 function App() {
-  // Estados para gestionar el código de entrada, análisis, código Mermaid, mensajes de error y estado de carga.
   const [inputCode, setInputCode] = useState('//Input code here...');
   const [analysis, setAnalysis] = useState('');
   const [mermaidCode, setMermaidCode] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  
-  // Ref para gestionar el contenedor de renderización del diagrama Mermaid.
+  const [isInputTouched, setIsInputTouched] = useState(false);
+
   const diagramRef = useRef(null);
 
-  // Función para enviar el código a la IA y generar el análisis y el diagrama Mermaid.
   const handleSendToAI = async () => {
-    setLoading(true); 
+    setLoading(true);
     setError(null);
     try {
       const analysisResponse = await analyzeCodeWithOpenAI(inputCode);
-      setAnalysis(analysisResponse); 
-      
+      setAnalysis(analysisResponse);
+
       const mermaidResponse = await generateMermaidCodeWithOpenAI(analysisResponse);
-      setMermaidCode(mermaidResponse); 
+      setMermaidCode(mermaidResponse);
     } catch (error) {
       setError('Error communicating with OpenAI.');
     } finally {
@@ -35,7 +33,6 @@ function App() {
     }
   };
 
-  // Efecto para renderizar el diagrama Mermaid cuando cambia el código Mermaid.
   useEffect(() => {
     if (mermaidCode) {
       try {
@@ -49,6 +46,13 @@ function App() {
       }
     }
   }, [mermaidCode]);
+
+  const handleEditorFocus = () => {
+    if (!isInputTouched) {
+      setInputCode('');
+      setIsInputTouched(true);
+    }
+  };
 
   return (
     <>
@@ -67,6 +71,7 @@ function App() {
                 language="javascript"
                 theme="vs-dark"
                 value={inputCode}
+                onFocus={handleEditorFocus} // Se limpia al hacer clic en el editor
                 onChange={(value) => setInputCode(value)}
               />
               <button 

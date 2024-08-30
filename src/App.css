@@ -1,5 +1,6 @@
 html, body {
   height: 100%;
+  height: 100vh;
   margin: 0;
   padding: 0;
   font-family: Arial, sans-serif;
@@ -18,17 +19,16 @@ header {
 }
 
 .container {
-  max-width: 1200px;
+  width: 90%;
   margin: 0 auto;
   padding: 20px;
-  min-height: auto; /* Cambiado de 100vh a auto */
   display: flex;
   flex-direction: column;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr; /* Cambiado para que la primera columna sea 2/3 y la segunda 1/3 */
   gap: 20px;
   flex: 1;
 }
@@ -39,9 +39,9 @@ header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   position: relative;
-  height: auto; /* Asegura que las tarjetas no se expandan */
-  min-height: 400px; /* Añadido para establecer un tamaño mínimo */
-  flex: none; /* Evita que las tarjetas crezcan innecesariamente */
+  height: auto;
+  min-height: 400px;
+  flex: none;
 }
 
 .card-content {
