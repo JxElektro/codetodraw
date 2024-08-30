@@ -35,7 +35,7 @@ export const analyzeCodeWithOpenAI = async (inputCode) => {
       model: 'gpt-4o-mini',
       messages: [{
         role: 'user',
-        content: `You are an expert software engineer. Please analyze the following code and identify the key components in the logical flow. Provide this as a clear and structured summary without any additional explanations or conclusions. Focus only on the critical parts of the flow:\n\n${inputCode}`
+        content: `You are an expert software engineer. Please analyze the following code and identify the key components in the logical flow. Provide the analysis as a clear, structured summary in markdown format, using appropriate headers, bullet points, and code blocks where necessary. Ensure it is formatted in a way that is presentable and easy to read:\n\n${inputCode}`
       }],
       max_tokens: 500,
       temperature: 0.3,
@@ -60,7 +60,7 @@ export const generateMermaidCodeWithOpenAI = async (analysisContent) => {
       model: 'gpt-4o-mini',
       messages: [{
         role: 'user',
-        content: `Based on the following analysis, generate a detailed Mermaid flowchart. Ensure that the response includes only the Mermaid code block and nothing else. Please omit any explanations, introductions, or conclusions. Return only the Mermaid flowchart:\n\n${analysisContent}`
+        content: `Based on the following analysis, generate a detailed Mermaid flowchart. Ensure that the response includes only the Mermaid code block with no additional characters, symbols, or special formatting other than those provided in the official Mermaid documentation. Please omit any explanations, introductions, or conclusions. Return only the Mermaid flowchart:\n\n${analysisContent}`
       }],
       max_tokens: 300,
       temperature: 0.2,
