@@ -1,31 +1,47 @@
+/* Variables para el esquema de colores */
+:root {
+  --primary-color: #3949ab;
+  --secondary-color: #1e88e5;
+  --background-color: #f0f8ff;
+  --card-background: #ffffff;
+  --text-color: #333333;
+  --accent-color: #ff4081;
+}
+
+/* Estilos generales */
 html, body {
-  height: 90%;
-  height: 90vh;
+  height: 100%;
   margin: 0;
   padding: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 body {
-  background-color: #d6eaf8;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
+/* Encabezado */
 header {
   text-align: center;
-  padding: 10px;
-  background-color: #3949ab;
+  padding: 20px;
+  background-color: var(--primary-color);
   color: white;
-  font-size: 18px;
+  font-size: 24px;
+  font-family: 'Poppins', 'Roboto', sans-serif;
 }
 
+/* Contenedor principal */
 .container {
   width: 90%;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
   display: flex;
   flex-direction: column;
 }
 
+/* Grid layout */
 .grid {
   display: flex;
   gap: 20px;
@@ -34,18 +50,49 @@ header {
   justify-content: space-between;
 }
 
+/* Estilos de las tarjetas */
 .card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  background-color: var(--card-background);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0;
   position: relative;
   height: auto;
   flex: 1;
   min-width: 280px;
   margin-bottom: 20px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+}
+
+.card-header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 15px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+  font-family: 'Poppins', 'Roboto', sans-serif;
+}
+
+.card-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+/* Estilos específicos de tarjetas */
 .code-input-card {
   flex: 3 1 60%;
 }
@@ -58,83 +105,82 @@ header {
   flex: 2 1 30%;
 }
 
-.card-content {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.card-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
-  color: #1a237e;
-}
-
+/* Estilos para el código y texto preformateado */
 .codeBox {
-  background-color: #e0e0e0;
-  border-radius: 4px;
-  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 15px;
   position: relative;
+  margin-bottom: 15px;
 }
 
 .pre {
   white-space: pre-wrap;
   word-break: break-word;
-  color: #424242;
+  color: #333;
+  font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Estilos de botones */
+.send-button, .copy-button {
+  background-color: var(--secondary-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.send-button:hover, .copy-button:hover {
+  background-color: var(--accent-color);
+}
+
+.send-button:active, .copy-button:active {
+  transform: scale(0.95);
 }
 
 .send-button {
-  background-color: #1e88e5;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
-  cursor: pointer;
+  align-self: flex-end;
+  margin-top: 10px;
+  margin-right: 20px;
 }
 
 .copy-button {
   position: absolute;
   bottom: 15px;
   right: 15px;
-  background-color: #3949ab;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 5px 10px;
   font-size: 12px;
-  cursor: pointer;
+  padding: 5px 10px;
 }
 
-.textarea {
-  width: 100%;
-  min-height: 200px;
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: #fafafa;
-  color: #1a237e;
+/* Ajuste para el contenedor del editor */
+.code-input-card .card-content {
+  display: flex;
+  flex-direction: column;
 }
 
+.react-monaco-editor-container {
+  flex-grow: 1;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Estilos para mensajes de error */
 .error-message {
   color: #e53935;
   font-weight: bold;
   margin-top: 10px;
-}
-
-.diagram-preview {
-  background-color: #e0e0e0;
   padding: 10px;
+  background-color: #ffebee;
   border-radius: 4px;
 }
 
-.react-monaco-editor-container {
-  flex: 1;
-  min-height: 400px;
-  background-color: #d6eaf8;
-}
-
+/* Estilos para el contenedor de carga */
 .loading-container {
   display: flex;
   justify-content: center;
@@ -143,17 +189,51 @@ header {
   height: 100px;
 }
 
-/* Responsive adjustments */
+/* Estilos para la vista previa del diagrama */
+.diagram-preview {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Media queries para diseño responsivo */
 @media screen and (max-width: 1024px) {
   .grid {
     flex-direction: column;
   }
 
-  .code-input-card, .mermaid-card {
+  .code-input-card, .mermaid-card, .analysis-card, .overview-card {
     flex: 1 1 100%;
   }
+}
 
-  .analysis-card, .overview-card {
-    flex: 1 1 100%;
+@media screen and (max-width: 768px) {
+  .container {
+    width: 95%;
+    padding: 10px;
+  }
+
+  .card {
+    min-width: 100%;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  header {
+    font-size: 20px;
+    padding: 15px;
+  }
+
+  .send-button {
+    margin-right: 10px;
   }
 }
