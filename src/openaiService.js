@@ -22,24 +22,6 @@ const openai = axios.create({
   },
 });
 
-const retryWithBackoff = async (fn, retries = 3, delay = 2000) => {
-  try {
-    console.log("Attempting function execution, retries left:", retries);
-    const result = await fn();
-    console.log("Function executed successfully:", result);
-    return result;
-  } catch (error) {
-    console.error("Error during function execution:", error.message);
-    if (retries > 0 && error.response?.status === 429) {
-      console.log("Rate limit hit, retrying after delay:", delay);
-      await new Promise(resolve => setTimeout(resolve, delay));
-      return retryWithBackoff(fn, retries - 1, delay * 2);
-    } else {
-      throw error;
-    }
-  }
-};
-
 // Función para crear un Thread
 const createThread = async () => {
   try {
