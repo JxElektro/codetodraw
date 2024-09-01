@@ -8,6 +8,7 @@ if (!API_KEY || !ASSISTANT_ID) {
   throw new Error("API Key or Assistant ID is missing or invalid.");
 }
 
+
 const openai = axios.create({
   baseURL: 'https://api.openai.com/v1',
   headers: {
@@ -20,6 +21,7 @@ const openai = axios.create({
 
 const createThread = async () => {
   try {
+    console.log("Creating a new thread...");
     const response = await openai.post('/threads', {});
     return response.data;
   } catch (error) {
@@ -34,6 +36,7 @@ const addMessageToThread = async (THREAD_ID, content) => {
   }
 
   try {
+    console.log("Adding message to thread:", THREAD_ID);
     const response = await openai.post(`/threads/${THREAD_ID}/messages`, {
       role: 'user',
       content: content,
@@ -50,6 +53,7 @@ const waitForCompletion = async (THREAD_ID, RUN_ID) => {
   do {
     const response = await openai.get(`/threads/${THREAD_ID}/runs/${RUN_ID}`);
     runStatus = response.data.status;
+    console.log("Current run status:", runStatus);
     if (runStatus === 'queued' || runStatus === 'in_progress') {
       await new Promise(resolve => setTimeout(resolve, 2000));
     }
@@ -59,13 +63,16 @@ const waitForCompletion = async (THREAD_ID, RUN_ID) => {
 
 const runAssistant = async (THREAD_ID) => {
   try {
+    console.log("Running assistant for thread:", THREAD_ID);
     const response = await openai.post(`/threads/${THREAD_ID}/runs`, {
       assistant_id: ASSISTANT_ID,
     });
 
+
     const runStatus = await waitForCompletion(THREAD_ID, response.data.id);
 
     if (runStatus === 'completed') {
+      console.log("Assistant run completed, fetching messages...");
       const messagesResponse = await openai.get(`/threads/${THREAD_ID}/messages`);
       const assistantMessage = messagesResponse.data.data.find(msg => msg.role === 'assistant');
       if (assistantMessage) {
@@ -94,8 +101,11 @@ export const analyzeCodeWithOpenAI = async (inputCode) => {
   }
 
   try {
+    console.log("Starting code analysis...");
     const thread = await createThread();
     const THREAD_ID = thread.id;
+
+    console.log("Thread ID:", THREAD_ID);
 
     await addMessageToThread(THREAD_ID, `Please analyze the following code:\n\n${inputCode}`);
 
@@ -104,6 +114,7 @@ export const analyzeCodeWithOpenAI = async (inputCode) => {
     const responseCheck = await openai.get(`/threads/${THREAD_ID}/messages`);
     const assistantMessage = responseCheck.data.data.find(msg => msg.role === 'assistant');
     if (assistantMessage) {
+      console.log("Final assistant message found:", assistantMessage);
       if (typeof assistantMessage.content === 'string') {
         return assistantMessage.content;
       } else if (Array.isArray(assistantMessage.content)) {
