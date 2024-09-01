@@ -16,7 +16,6 @@ function App() {
   const [possibleImprovements, setPossibleImprovements] = useState('');
   const [documentation, setDocumentation] = useState('');
   const [mermaidDiagram, setMermaidDiagram] = useState('');
-  const [optimizationPotential, setOptimizationPotential] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isInputTouched, setIsInputTouched] = useState(false);
@@ -53,11 +52,6 @@ function App() {
       setFunctionalFlow(analysisData.functional_flow);
       setPossibleImprovements(analysisData.possible_improvements);
       setDocumentation(analysisData.documentation);
-
-      // Set performance metrics if available
-      if (analysisData.performance_metrics) {
-        setOptimizationPotential(analysisData.performance_metrics.optimization_potential);
-      }
 
       // Set the Mermaid diagram code directly
       setMermaidDiagram(analysisData.mermaid_diagram);
@@ -201,18 +195,6 @@ function App() {
               </div>
               <div className="card-content">
                 <ReactMarkdown className="markdown-body">{documentation}</ReactMarkdown>
-              </div>
-            </div>
-          )}
-
-          {optimizationPotential && optimizationPotential.current && optimizationPotential.optimized && (
-            <div className="card analysis-card">
-              <div className="card-header">
-                <h2 className="card-title">Optimization Potential</h2>
-              </div>
-              <div className="card-content">
-                <pre>Current: {optimizationPotential.current}</pre>
-                <pre>Optimized: {optimizationPotential.optimized}</pre>
               </div>
             </div>
           )}
