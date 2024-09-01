@@ -9,11 +9,12 @@ import { analyzeCodeWithOpenAI } from './openaiService';
 
 function App() {
   const [inputCode, setInputCode] = useState('//Input code here...\n');
+  const [codeAnalysis, setCodeAnalysis] = useState('');
   const [overview, setOverview] = useState('');
-  const [componentBreakdown, setComponentBreakdown] = useState({});
-  const [functionalFlow, setFunctionalFlow] = useState([]);
-  const [possibleImprovements, setPossibleImprovements] = useState([]);
-  const [documentation, setDocumentation] = useState({});
+  const [componentBreakdown, setComponentBreakdown] = useState('');
+  const [functionalFlow, setFunctionalFlow] = useState('');
+  const [possibleImprovements, setPossibleImprovements] = useState('');
+  const [documentation, setDocumentation] = useState('');
   const [mermaidDiagram, setMermaidDiagram] = useState('');
   const [optimizationPotential, setOptimizationPotential] = useState(null);
   const [error, setError] = useState(null);
@@ -22,21 +23,31 @@ function App() {
 
   const diagramRef = useRef(null);
 
+  const cleanJSONResponse = (response) => {
+    // Remove any text before and after the JSON, such as markdown or code block syntax
+    const jsonMatch = response.match(/{[\s\S]*}/);
+    return jsonMatch ? jsonMatch[0] : response;
+  };
+
   const handleSendToAI = async () => {
     setLoading(true);
     setError(null);
     try {
       const analysisResponse = await analyzeCodeWithOpenAI(inputCode);
 
-      // Intentar parsear el JSON recibido
+      // Clean the JSON response
+      const cleanResponse = cleanJSONResponse(analysisResponse);
+
+      // Try to parse the cleaned JSON response
       let analysisData;
       try {
-        analysisData = JSON.parse(analysisResponse);
+        analysisData = JSON.parse(cleanResponse);
       } catch (jsonError) {
         throw new Error('Error parsing JSON response: ' + jsonError.message);
       }
 
       // Destructuring the response to fill the different states
+      setCodeAnalysis(analysisData.code_analysis);
       setOverview(analysisData.overview);
       setComponentBreakdown(analysisData.component_breakdown);
       setFunctionalFlow(analysisData.functional_flow);
@@ -128,6 +139,17 @@ function App() {
             </div>
           </div>
 
+          {codeAnalysis && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Code Analysis</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{codeAnalysis}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
           {overview && (
             <div className="card analysis-card">
               <div className="card-header">
@@ -139,46 +161,46 @@ function App() {
             </div>
           )}
 
-          {Object.keys(componentBreakdown).length > 0 && (
+          {componentBreakdown && (
             <div className="card analysis-card">
               <div className="card-header">
                 <h2 className="card-title">Component Breakdown</h2>
               </div>
               <div className="card-content">
-                <pre>{JSON.stringify(componentBreakdown, null, 2)}</pre>
+                <ReactMarkdown className="markdown-body">{componentBreakdown}</ReactMarkdown>
               </div>
             </div>
           )}
 
-          {functionalFlow.length > 0 && (
+          {functionalFlow && (
             <div className="card analysis-card">
               <div className="card-header">
                 <h2 className="card-title">Functional Flow</h2>
               </div>
               <div className="card-content">
-                <pre>{functionalFlow.join('\n')}</pre>
+                <ReactMarkdown className="markdown-body">{functionalFlow}</ReactMarkdown>
               </div>
             </div>
           )}
 
-          {possibleImprovements.length > 0 && (
+          {possibleImprovements && (
             <div className="card analysis-card">
               <div className="card-header">
                 <h2 className="card-title">Possible Improvements</h2>
               </div>
               <div className="card-content">
-                <pre>{possibleImprovements.join('\n')}</pre>
+                <ReactMarkdown className="markdown-body">{possibleImprovements}</ReactMarkdown>
               </div>
             </div>
           )}
 
-          {Object.keys(documentation).length > 0 && (
+          {documentation && (
             <div className="card analysis-card">
               <div className="card-header">
                 <h2 className="card-title">Documentation</h2>
               </div>
               <div className="card-content">
-                <pre>{JSON.stringify(documentation, null, 2)}</pre>
+                <ReactMarkdown className="markdown-body">{documentation}</ReactMarkdown>
               </div>
             </div>
           )}

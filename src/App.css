@@ -12,26 +12,26 @@ body {
 
 header {
   text-align: center;
-  padding: 5px;
+  padding: 10px;
   background-color: #3949ab;
   color: white;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .container {
   width: 90%;
-  height: fit-content;
   margin: 0 auto;
-  padding: 5px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  display: flex;
   gap: 20px;
-  flex: 1;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
 .card {
@@ -41,8 +41,21 @@ header {
   padding: 20px;
   position: relative;
   height: auto;
-  min-height: 300px;
-  flex: none;
+  flex: 1;
+  min-width: 280px;
+  margin-bottom: 20px;
+}
+
+.code-input-card {
+  flex: 3 1 60%;
+}
+
+.mermaid-card {
+  flex: 3 1 60%;
+}
+
+.analysis-card, .overview-card {
+  flex: 2 1 30%;
 }
 
 .card-content {
@@ -52,7 +65,7 @@ header {
 }
 
 .card-title {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 15px;
   color: #1a237e;
@@ -122,14 +135,25 @@ header {
   background-color: #d6eaf8;
 }
 
-.analysis-card {
-  grid-column: span 2;
-}
-
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 20px;
   height: 100px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 1024px) {
+  .grid {
+    flex-direction: column;
+  }
+
+  .code-input-card, .mermaid-card {
+    flex: 1 1 100%;
+  }
+
+  .analysis-card, .overview-card {
+    flex: 1 1 100%;
+  }
 }
