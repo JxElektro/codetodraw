@@ -86,10 +86,16 @@ header {
 }
 
 .card-content {
-  padding: 15px;
+  padding: 15px; /* Padding por defecto */
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+}
+
+/* Ajuste para el contenido de las cards de análisis y documentación */
+.analysis-card .card-content,
+.documentation-card .card-content {
+  padding: 20px; /* Aumentar padding para un espacio más cómodo */
 }
 
 /* Estilos específicos de tarjetas */
@@ -98,7 +104,8 @@ header {
 }
 
 .mermaid-card {
-  flex: 3 1 60%;
+  flex: 1 1 auto; /* Ajustado */
+  max-width: 400px; /* Limitar el ancho */
 }
 
 .analysis-card, .overview-card {

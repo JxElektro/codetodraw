@@ -9,7 +9,6 @@ import { analyzeCodeWithOpenAI } from './openaiService.jsx';
 
 function App() {
   const [inputCode, setInputCode] = useState('//Input code here...\n');
-  const [codeAnalysis, setCodeAnalysis] = useState('');
   const [overview, setOverview] = useState('');
   const [componentBreakdown, setComponentBreakdown] = useState('');
   const [functionalFlow, setFunctionalFlow] = useState('');
@@ -44,7 +43,6 @@ function App() {
         throw new Error('Error parsing JSON response: ' + jsonError.message);
       }
 
-      setCodeAnalysis(analysisData.code_analysis);
       setOverview(analysisData.overview);
       setComponentBreakdown(analysisData.component_breakdown);
       setFunctionalFlow(analysisData.functional_flow);
@@ -128,17 +126,6 @@ function App() {
                 >
                   <FaClipboard />
                 </button>
-              </div>
-            </div>
-          )}
-
-          {codeAnalysis && (
-            <div className="card analysis-card">
-              <div className="card-header">
-                <h2 className="card-title">Code Analysis</h2>
-              </div>
-              <div className="card-content">
-                <ReactMarkdown className="markdown-body">{codeAnalysis}</ReactMarkdown>
               </div>
             </div>
           )}
