@@ -5,7 +5,7 @@ import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import { Oval } from 'react-loader-spinner';
 import './App.css';
-import { analyzeCodeWithOpenAI } from './openaiService';
+import { analyzeCodeWithOpenAI } from './openaiService.jsx';
 
 function App() {
   const [inputCode, setInputCode] = useState('//Input code here...\n');
@@ -19,11 +19,11 @@ function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isInputTouched, setIsInputTouched] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const diagramRef = useRef(null);
 
   const cleanJSONResponse = (response) => {
-    // Remove any text before and after the JSON, such as markdown or code block syntax
     const jsonMatch = response.match(/{[\s\S]*}/);
     return jsonMatch ? jsonMatch[0] : response;
   };
@@ -31,13 +31,12 @@ function App() {
   const handleSendToAI = async () => {
     setLoading(true);
     setError(null);
+    setStatusMessage('Creating a new thread...');
     try {
-      const analysisResponse = await analyzeCodeWithOpenAI(inputCode);
+      const analysisResponse = await analyzeCodeWithOpenAI(inputCode, setStatusMessage);
 
-      // Clean the JSON response
       const cleanResponse = cleanJSONResponse(analysisResponse);
 
-      // Try to parse the cleaned JSON response
       let analysisData;
       try {
         analysisData = JSON.parse(cleanResponse);
@@ -45,21 +44,19 @@ function App() {
         throw new Error('Error parsing JSON response: ' + jsonError.message);
       }
 
-      // Destructuring the response to fill the different states
       setCodeAnalysis(analysisData.code_analysis);
       setOverview(analysisData.overview);
       setComponentBreakdown(analysisData.component_breakdown);
       setFunctionalFlow(analysisData.functional_flow);
       setPossibleImprovements(analysisData.possible_improvements);
       setDocumentation(analysisData.documentation);
-
-      // Set the Mermaid diagram code directly
       setMermaidDiagram(analysisData.mermaid_diagram);
     } catch (err) {
       console.error(err);
       setError('Error comunicando con OpenAI: ' + err.message);
     } finally {
       setLoading(false);
+      setStatusMessage('');
     }
   };
 
@@ -116,22 +113,24 @@ function App() {
             </div>
           </div>
 
-          <div className="card mermaid-card">
-            <div className="card-header">
-              <h2 className="card-title">Mermaid Diagram Code</h2>
+          {!loading && mermaidDiagram && (
+            <div className="card mermaid-card">
+              <div className="card-header">
+                <h2 className="card-title">Mermaid Diagram Code</h2>
+              </div>
+              <div className="card-content">
+                <pre className="pre">
+                  <code>{mermaidDiagram}</code>
+                </pre>
+                <button 
+                  className="copy-button" 
+                  onClick={() => navigator.clipboard.writeText(mermaidDiagram)}
+                >
+                  <FaClipboard />
+                </button>
+              </div>
             </div>
-            <div className="card-content">
-              <pre className="pre">
-                <code>{mermaidDiagram}</code>
-              </pre>
-              <button 
-                className="copy-button" 
-                onClick={() => navigator.clipboard.writeText(mermaidDiagram)}
-              >
-                <FaClipboard />
-              </button>
-            </div>
-          </div>
+          )}
 
           {codeAnalysis && (
             <div className="card analysis-card">
@@ -204,9 +203,10 @@ function App() {
           <div className="loading-container">
             <Oval
               color="#007bff"
-              height={100}
-              width={100}
+              height={50} /* Reducido de 100 */
+              width={50}  /* Reducido de 100 */
             />
+            {statusMessage && <p className="status-message">{statusMessage}</p>} {/* Mueve el statusMessage debajo del círculo de carga */}
           </div>
         )}
 

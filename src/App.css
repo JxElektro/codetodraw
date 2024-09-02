@@ -24,10 +24,10 @@ body {
 /* Encabezado */
 header {
   text-align: center;
-  padding: 20px;
+  padding: 5px; /* Reducido de 20px */
   background-color: var(--primary-color);
   color: white;
-  font-size: 24px;
+  font-size: 15px; /* Reducido de 24px */
   font-family: 'Poppins', 'Roboto', sans-serif;
 }
 
@@ -73,20 +73,20 @@ header {
 .card-header {
   background-color: var(--primary-color);
   color: white;
-  padding: 15px;
+  padding: 10px;
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
 }
 
 .card-title {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
   margin: 0;
   font-family: 'Poppins', 'Roboto', sans-serif;
 }
 
 .card-content {
-  padding: 20px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -180,13 +180,22 @@ header {
   border-radius: 4px;
 }
 
-/* Estilos para el contenedor de carga */
+/* Ajuste para el contenedor de carga */
 .loading-container {
   display: flex;
+  flex-direction: column; /* Modificado para permitir que el mensaje de estado esté debajo del círculo de carga */
   justify-content: center;
   align-items: center;
   margin-top: 20px;
   height: 100px;
+}
+
+/* Ajuste para el mensaje de estado */
+.status-message {
+  margin-top: 10px; /* Para separarlo del círculo de carga */
+  color: var(--primary-color);
+  font-size: 14px;
+  text-align: center;
 }
 
 /* Estilos para la vista previa del diagrama */
