@@ -5,47 +5,75 @@ import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 import { Oval } from 'react-loader-spinner';
 import './App.css';
-import { analyzeCodeWithOpenAI, generateMermaidCodeWithOpenAI } from './openaiService';
+import { analyzeCodeWithOpenAI } from './openaiService.jsx';
 
 function App() {
   const [inputCode, setInputCode] = useState('//Input code here...\n');
-  const [analysis, setAnalysis] = useState('');
-  const [mermaidCode, setMermaidCode] = useState('');
+  const [codeAnalysis, setCodeAnalysis] = useState('');
+  const [overview, setOverview] = useState('');
+  const [componentBreakdown, setComponentBreakdown] = useState('');
+  const [functionalFlow, setFunctionalFlow] = useState('');
+  const [possibleImprovements, setPossibleImprovements] = useState('');
+  const [documentation, setDocumentation] = useState('');
+  const [mermaidDiagram, setMermaidDiagram] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isInputTouched, setIsInputTouched] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const diagramRef = useRef(null);
+
+  const cleanJSONResponse = (response) => {
+    const jsonMatch = response.match(/{[\s\S]*}/);
+    return jsonMatch ? jsonMatch[0] : response;
+  };
 
   const handleSendToAI = async () => {
     setLoading(true);
     setError(null);
+    setStatusMessage('Creating a new thread...');
     try {
-      const analysisResponse = await analyzeCodeWithOpenAI(inputCode);
-      setAnalysis(analysisResponse);
+      const analysisResponse = await analyzeCodeWithOpenAI(inputCode, setStatusMessage);
 
-      const mermaidResponse = await generateMermaidCodeWithOpenAI(analysisResponse);
-      setMermaidCode(mermaidResponse);
-    } catch (error) {
-      setError('Error communicating with OpenAI.');
+      const cleanResponse = cleanJSONResponse(analysisResponse);
+
+      let analysisData;
+      try {
+        analysisData = JSON.parse(cleanResponse);
+      } catch (jsonError) {
+        throw new Error('Error parsing JSON response: ' + jsonError.message);
+      }
+
+      setCodeAnalysis(analysisData.code_analysis);
+      setOverview(analysisData.overview);
+      setComponentBreakdown(analysisData.component_breakdown);
+      setFunctionalFlow(analysisData.functional_flow);
+      setPossibleImprovements(analysisData.possible_improvements);
+      setDocumentation(analysisData.documentation);
+      setMermaidDiagram(analysisData.mermaid_diagram);
+    } catch (err) {
+      console.error(err);
+      setError('Error comunicando con OpenAI: ' + err.message);
     } finally {
       setLoading(false);
+      setStatusMessage('');
     }
   };
 
   useEffect(() => {
-    if (mermaidCode) {
+    if (mermaidDiagram) {
       try {
-        mermaid.render('mermaid-diagram', mermaidCode, (svgCode) => {
+        mermaid.render('mermaid-diagram', mermaidDiagram, (svgCode) => {
           if (diagramRef.current) {
             diagramRef.current.innerHTML = svgCode;
           }
         });
       } catch (e) {
-        setError('Error rendering Mermaid diagram.');
+        console.error('Error rendering Mermaid diagram: ', e);
+        setError('Error rendering Mermaid diagram: ' + e.message);
       }
     }
-  }, [mermaidCode]);
+  }, [mermaidDiagram]);
 
   const handleEditorFocus = () => {
     if (!isInputTouched) {
@@ -85,30 +113,87 @@ function App() {
             </div>
           </div>
 
-          <div className="card mermaid-card">
-            <div className="card-header">
-              <h2 className="card-title">Mermaid Diagram Code</h2>
-            </div>
-            <div className="card-content">
-              <pre className="pre">
-                <code>{mermaidCode}</code>
-              </pre>
-              <button 
-                className="copy-button" 
-                onClick={() => navigator.clipboard.writeText(mermaidCode)}
-              >
-                <FaClipboard />
-              </button>
-            </div>
-          </div>
-
-          {analysis && (
-            <div className="card analysis-card">
+          {!loading && mermaidDiagram && (
+            <div className="card mermaid-card">
               <div className="card-header">
-                <h2 className="card-title">Analysis</h2>
+                <h2 className="card-title">Mermaid Diagram Code</h2>
               </div>
               <div className="card-content">
-                <ReactMarkdown className="markdown-body">{analysis}</ReactMarkdown>
+                <pre className="pre">
+                  <code>{mermaidDiagram}</code>
+                </pre>
+                <button 
+                  className="copy-button" 
+                  onClick={() => navigator.clipboard.writeText(mermaidDiagram)}
+                >
+                  <FaClipboard />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {codeAnalysis && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Code Analysis</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{codeAnalysis}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
+          {overview && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Overview</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{overview}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
+          {componentBreakdown && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Component Breakdown</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{componentBreakdown}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
+          {functionalFlow && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Functional Flow</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{functionalFlow}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
+          {possibleImprovements && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Possible Improvements</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{possibleImprovements}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
+          {documentation && (
+            <div className="card analysis-card">
+              <div className="card-header">
+                <h2 className="card-title">Documentation</h2>
+              </div>
+              <div className="card-content">
+                <ReactMarkdown className="markdown-body">{documentation}</ReactMarkdown>
               </div>
             </div>
           )}
@@ -118,13 +203,14 @@ function App() {
           <div className="loading-container">
             <Oval
               color="#007bff"
-              height={100}
-              width={100}
+              height={50} /* Reducido de 100 */
+              width={50}  /* Reducido de 100 */
             />
+            {statusMessage && <p className="status-message">{statusMessage}</p>} {/* Mueve el statusMessage debajo del círculo de carga */}
           </div>
         )}
 
-        {!loading && mermaidCode && (
+        {!loading && mermaidDiagram && (
           <div className="diagram-preview-container">
             <div className="card">
               <div className="card-header">
